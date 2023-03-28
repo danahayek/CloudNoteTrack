@@ -6,13 +6,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -27,6 +31,8 @@ public class Detail extends AppCompatActivity {
 
 
 
+
+
     TextView d_name;
     TextView d_detail;
 
@@ -34,6 +40,15 @@ public class Detail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        StorageReference storageRef = storage.getReference().child("images/download.jpg");
+        ImageView imageView = findViewById(R.id.imageDetail);
+        Glide.with(this)
+                .load(storageRef)
+                .into(imageView);
+
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         screenTrack("DetailAnalysis");
