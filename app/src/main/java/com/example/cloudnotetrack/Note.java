@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.cloudnotetrack.Adapter.CategoryAdapter;
+import com.example.cloudnotetrack.Adapter.NoteAdapter;
 import com.example.cloudnotetrack.Model.Category;
+import com.example.cloudnotetrack.Model.Notee;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -18,13 +20,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.ktx.Firebase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity implements CategoryAdapter.ItemClickListener {
+public class Note extends AppCompatActivity  implements NoteAdapter.ItemClickListener {
+
     //fire analysis
     private FirebaseAnalytics mFirebaseAnalytics;
     Calendar calender = Calendar.getInstance();
@@ -32,32 +34,32 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.I
     int min =calender.get(Calendar.MINUTE);
     int sec =calender.get(Calendar.SECOND);
 
-    //fire store
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    RecyclerView recyclerCat;
-    CategoryAdapter adapterCAT;
+
+    RecyclerView recyclerNOT;
+    NoteAdapter adapterNOT;
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-    ArrayList<Category> cat_items;
+    ArrayList<Notee> not_items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_note);
 
-        // trak
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        screenTrack("CategoryAnalysis");
-        //recycelr
-        recyclerCat = findViewById(R.id.cat_recycler);
-        cat_items = new ArrayList<Category>();
-        adapterCAT = new CategoryAdapter(this,cat_items ,this);
-        recyclerCat.setAdapter(adapterCAT);
+        screenTrack("NoteAnalysis");
 
-        GetCategory();
+        recyclerNOT = findViewById(R.id.note_recyler);
+        not_items = new ArrayList<Notee>();
+        adapterNOT = new NoteAdapter(this,not_items,this);
+        recyclerNOT.setAdapter(adapterNOT);
+
+        String nn = getIntent().getStringExtra("name");
+        GetNote(nn);
     }
-    private void GetCategory() {
+    private void GetNote(String name) {
 
-        db.collection("category").get()
+        db.collection("note").whereEqualTo("name",name).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -68,18 +70,20 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.I
                             for (DocumentSnapshot documentSnapshot : documentSnapshots) {
                                 if (documentSnapshot.exists()) {
                                     String id = documentSnapshot.getId();
-                                    String CAT = documentSnapshot.getString("name");
+                                    String note = documentSnapshot.getString("name");
+                                    String detail = documentSnapshot.getString("detail");
 
 
-                                    Category c = new Category(id,CAT);
-                                    cat_items.add(c);
 
-                                    recyclerCat.setLayoutManager(layoutManager);
-                                    recyclerCat.setHasFixedSize(true);
-                                    recyclerCat.setAdapter(adapterCAT);
+                                    Notee c = new Notee(id,note,detail);
+                                    not_items.add(c);
+
+                                    recyclerNOT.setLayoutManager(layoutManager);
+                                    recyclerNOT.setHasFixedSize(true);
+                                    recyclerNOT.setAdapter(adapterNOT);
                                     ;
-                                    adapterCAT.notifyDataSetChanged();
-                                    Log.e("get", cat_items.toString());
+                                    adapterNOT.notifyDataSetChanged();
+                                    Log.e("get", not_items.toString());
 
                                 }
                             }
@@ -97,21 +101,23 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.I
                 });
     }
 
-
     @Override
     public void onItemClick(int position, String id) {
 
-        Intent intent = new Intent(this, Note.class);
-        intent.putExtra("name",cat_items.get(position).getCat_name());
+        Intent intent = new Intent(this, Detail.class);
+        intent.putExtra("name",not_items.get(position).getNote_name());
+        intent.putExtra("detail",not_items.get(position).getNote_detail());
+
 
         //   Log.e("id ",add_items.get(position).getId());
         startActivity(intent);
-    }
 
+
+    }
     public void screenTrack(String screen){
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME , screen);
-        bundle.putString(FirebaseAnalytics.Param.SCREEN_CLASS , "CategoryAnalysis");
+        bundle.putString(FirebaseAnalytics.Param.SCREEN_CLASS , "NoteAnalysis");
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW,bundle);
 
 
@@ -129,11 +135,11 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.I
         int s = sec2-sec;
 
         HashMap<String , Object> add = new HashMap<>();
-        add.put("name", "CategoryAnalysis");
+        add.put("name", "NoteAnalysis");
         add.put("hours",h);
         add.put("minutes",m);
         add.put("seconds",s);
-        db.collection("CategoryAnalysis").add(add)
+        db.collection("NoteAnalysis").add(add)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
@@ -152,5 +158,4 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.I
         Log.e("second",String.valueOf(s));
         super.onPause();
     }
-
 }

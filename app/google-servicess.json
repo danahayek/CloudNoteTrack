@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "491695937320",
+    "project_id": "cloudtrack-f24ba",
+    "storage_bucket": "cloudtrack-f24ba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:491695937320:android:133878e95cbfe03b62621d",
+        "android_client_info": {
+          "package_name": "com.example.cloudnotetrack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "491695937320-vhuqd80fop0kptgu2o1o42diphtkncqf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVeh7oyGZUjxnz6ir0mDiIWb0b_lEksuc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "491695937320-vhuqd80fop0kptgu2o1o42diphtkncqf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
